@@ -5,6 +5,8 @@ VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "app.reactui", "App.ReactUi\app.reactui.esproj", "{163C03E7-48FD-2DAE-1461-CF06656A3DA1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App.WebApi", "App.WebApi\App.WebApi.csproj", "{4D787DB1-BE36-489D-B133-62CBDF8172E9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,6 +19,10 @@ Global
 		{163C03E7-48FD-2DAE-1461-CF06656A3DA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{163C03E7-48FD-2DAE-1461-CF06656A3DA1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{163C03E7-48FD-2DAE-1461-CF06656A3DA1}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{4D787DB1-BE36-489D-B133-62CBDF8172E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D787DB1-BE36-489D-B133-62CBDF8172E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D787DB1-BE36-489D-B133-62CBDF8172E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D787DB1-BE36-489D-B133-62CBDF8172E9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
