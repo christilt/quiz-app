@@ -9,6 +9,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App.WebApi", "App.WebApi\Ap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Integration", "Tests.Integration\Tests.Integration.csproj", "{DEF8F5AD-2AEE-44E3-AB06-5D2C3579C599}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App.DatabaseSource", "App.DatabaseSource\App.DatabaseSource.csproj", "{831EFB42-699C-4BC6-86A6-D684CFCECB18}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +36,10 @@ Global
 		{DEF8F5AD-2AEE-44E3-AB06-5D2C3579C599}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DEF8F5AD-2AEE-44E3-AB06-5D2C3579C599}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DEF8F5AD-2AEE-44E3-AB06-5D2C3579C599}.Release|Any CPU.Build.0 = Release|Any CPU
+		{831EFB42-699C-4BC6-86A6-D684CFCECB18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{831EFB42-699C-4BC6-86A6-D684CFCECB18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{831EFB42-699C-4BC6-86A6-D684CFCECB18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{831EFB42-699C-4BC6-86A6-D684CFCECB18}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
