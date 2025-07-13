@@ -59,7 +59,7 @@ stages:
       displayName: 'Publish $(projectNameWebApi)'
       inputs:
         ConnectionType: 'AzureRM'
-        azureSubscription: 'Dev service connection'
+        azureSubscription: 'Dev service connection quizapp'
         appType: 'webApp'
         WebAppName: 'ct-dev-quizapp-api'
         packageForLinux: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/**/$(projectNameWebApi).zip'
