@@ -1,4 +1,6 @@
 using App.DatabaseSource;
+using Azure.Core;
+using Azure.Identity;
 
 namespace App.WebApi;
 
@@ -12,7 +14,13 @@ public class Program
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-        builder.Services.AddDatabase(builder.Configuration);
+        var credential = new DefaultAzureCredential();
+        builder.Services.AddSingleton<TokenCredential>(credential);
+        builder.Configuration.AddAzureKeyVault(
+            new Uri(builder.Configuration["KeyVault:VaultUri"]!),
+            credential);
+        builder.Services.AddDatabase(builder.Configuration, credential);
+
 
         var app = builder.Build();
 

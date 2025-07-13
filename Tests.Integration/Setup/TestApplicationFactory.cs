@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,12 @@ public class TestApplicationFactory : WebApplicationFactory<App.WebApi.Program>
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.UseEnvironment("IntegrationTests"); 
+        builder.ConfigureAppConfiguration((context, config) =>
+        {
+            config.AddJsonFile("appsettings.IntegrationTests.json", optional: false);
+        });
+
         builder.ConfigureServices(services =>
         {
 
