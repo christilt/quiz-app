@@ -13,7 +13,9 @@ pool:
 variables:
   projectNameWebApi: 'App.WebApi'
   projectNameWebUiAdmin: 'App.WebUi.Admin'
+  serviceConnection: 'Dev service connection quizapp'
 
+# TODO: Split this into sensible stages
 stages:
 - stage: dev
   displayName: Dev
@@ -28,6 +30,13 @@ stages:
       inputs:
         packageType: sdk
         version: '8.x'
+    - task: AzureKeyVault@2
+      displayName: 'Get keyvault values'
+      inputs:
+        azureSubscription: $(serviceConnection)
+        KeyVaultName: 'ct-dev-kv'
+        SecretsFilter: 'ConnectionStrings__DefaultConnection'
+        RunAsPreJob: true
 
     - task: DotNetCoreCLI@2
       displayName: 'Restore project dependencies'
@@ -59,7 +68,7 @@ stages:
       displayName: 'Publish $(projectNameWebApi)'
       inputs:
         ConnectionType: 'AzureRM'
-        azureSubscription: 'Dev service connection quizapp'
+        azureSubscription: $(serviceConnection)
         appType: 'webApp'
         WebAppName: 'ct-dev-quizapp-api'
         packageForLinux: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/**/$(projectNameWebApi).zip'
