@@ -19,7 +19,7 @@ public class Program
         builder.Configuration.AddAzureKeyVault(
             new Uri(builder.Configuration["KeyVault:VaultUri"]!),
             credential);
-        builder.Services.AddDatabase(builder.Configuration, credential);
+        builder.Services.AddDatabaseSourceServices(builder.Configuration, credential);
 
 
         var app = builder.Build();

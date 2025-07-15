@@ -1,5 +1,6 @@
 ﻿using Azure.Core;
 using Azure.Identity;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,13 +12,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace App.DatabaseSource;
-public static class AddDatabaseServices
+public static class DependencyInjection
 {
-    public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration config, TokenCredential credential)
+    public static IServiceCollection AddDatabaseSourceServices(this IServiceCollection services, IConfiguration config, TokenCredential credential)
     {
         if (config["UseLocalDatabase"] == "True")
         {
-            var connectionString = config.GetConnectionString("LocalConnection");
+            var connectionString = config.GetConnectionString("Local");
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(connectionString));
             return services;
@@ -25,9 +26,11 @@ public static class AddDatabaseServices
 
         services.AddDbContext<AppDbContext>(options =>
         {
-            var connectionString = config.GetConnectionString("DefaultConnection");
             var token = credential.GetToken(new TokenRequestContext(new[] { "https://database.windows.net/.default" }), default);
-            options.UseSqlServer(connectionString);
+            var connectionString = config.GetConnectionString("DefaultConnection");
+            var connection = new SqlConnection(connectionString);
+            connection.AccessToken = token.Token;
+            options.UseSqlServer(connection);
         });
         return services;
     }
