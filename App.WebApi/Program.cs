@@ -16,9 +16,18 @@ public class Program
         builder.Services.AddSwaggerGen();
         var credential = new DefaultAzureCredential();
         builder.Services.AddSingleton<TokenCredential>(credential);
+        // TODO:
+        //var keyVaultSecretManager = new HierarchicalKeyVaultSecretManager();
+        //builder.Services.AddSingleton(keyVaultSecretManager);
+        //builder.Configuration.AddAzureKeyVault(
+        //    new Uri(builder.Configuration["KeyVault:VaultUri"]!),
+        //    credential,
+        //    keyVaultSecretManager);
+
         builder.Configuration.AddAzureKeyVault(
             new Uri(builder.Configuration["KeyVault:VaultUri"]!),
             credential);
+        builder.Services.AddDatabaseSourceServices(builder.Configuration, credential);
         builder.Services.AddDatabaseSourceServices(builder.Configuration, credential);
 
 

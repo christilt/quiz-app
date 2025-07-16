@@ -35,7 +35,7 @@ stages:
       inputs:
         azureSubscription: $(serviceConnection)
         KeyVaultName: 'ct-dev-kv'
-        SecretsFilter: 'ConnectionStrings__DefaultConnection'
+        SecretsFilter: 'ConnectionStrings--DefaultConnection'
         RunAsPreJob: true
 
     - task: DotNetCoreCLI@2
