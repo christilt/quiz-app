@@ -60,12 +60,34 @@ stages:
         arguments: '--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
         zipAfterPublish: true
 
+    - task: DotNetCoreCLI@2
+      displayName: 'Create Database EF Migration Bundle'
+      inputs:
+        command: 'custom'
+        custom: 'ef'
+        arguments: 'migrations bundle --self-contained -r linux-x64 --output efbundle'
+        workingDirectory: '$(Build.SourcesDirectory)/src/YourProject'
+
     - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: drop'
-      condition: succeeded()
+      displayName: 'Publish Database EF Migration Bundle'
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)/src/YourProject/efbundle'
+        ArtifactName: 'MigrationBundle'
+
+    - download: current
+      artifact: MigrationBundle
+
+    - script: |
+        ./MigrationBundle/efbundle --connection "$(ConnectionStrings--DefaultConnection)"
+      displayName: 'Run EF Core Migration Bundle'
+
+    # TODO: Remove this?
+    # - task: PublishBuildArtifacts@1
+    #   displayName: 'Publish Artifact: drop'
+    #   condition: succeeded()
 
     - task: AzureRmWebAppDeployment@4
-      displayName: 'Publish $(projectNameWebApi)'
+      displayName: 'Deploy $(projectNameWebApi)'
       inputs:
         ConnectionType: 'AzureRM'
         azureSubscription: $(serviceConnection)
