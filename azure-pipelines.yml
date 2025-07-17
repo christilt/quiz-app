@@ -85,7 +85,7 @@ stages:
       displayName: 'Download Database EF Migration Bundle'
 
     - script: |
-        ./MigrationBundle/efbundle --connection "$(ConnectionStrings--DefaultConnection)"
+        $(Pipeline.Workspace)/MigrationBundle/efbundle --connection "$(ConnectionStrings--DefaultConnection)"
       displayName: 'Run Database EF Migration Bundle'
 
     # TODO: Remove this?
