@@ -60,6 +60,10 @@ stages:
         arguments: '--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
         zipAfterPublish: true
 
+    - script: |
+        dotnet tool install --global dotnet-ef
+      displayName: 'Install dotnet-ef CLI'
+
     - task: DotNetCoreCLI@2
       displayName: 'Create Database EF Migration Bundle'
       inputs:
