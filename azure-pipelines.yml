@@ -90,12 +90,7 @@ stages:
         scriptType: 'pscore'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          cd $(Pipeline.Workspace)/MigrationBundle/efbundle
-          .\efbundle --connection "$(connection)"
-
-    - script: |
-        $(Pipeline.Workspace)/MigrationBundle/efbundle --connection "$(ConnectionStrings--DefaultConnection)"
-      displayName: 'Run Database EF Migration Bundle'
+          $(Pipeline.Workspace)/MigrationBundle/efbundle --connection "$(ConnectionStrings--DefaultConnection)"
 
     - task: AzureRmWebAppDeployment@4
       displayName: 'Deploy $(projectNameWebApi)'
