@@ -78,9 +78,11 @@ stages:
         PathtoPublish: '$(Build.SourcesDirectory)/App.DatabaseSource/efbundle'
         ArtifactName: 'MigrationBundle'
 
-    - download: current
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifactName: 'MigrationBundle'
+        targetPath: '$(Pipeline.Workspace)/MigrationBundle'
       displayName: 'Download Database EF Migration Bundle'
-      artifact: MigrationBundle
 
     - script: |
         ./MigrationBundle/efbundle --connection "$(ConnectionStrings--DefaultConnection)"
