@@ -84,14 +84,18 @@ stages:
         targetPath: '$(Pipeline.Workspace)/MigrationBundle'
       displayName: 'Download Database EF Migration Bundle'
 
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: $(serviceConnection)
+        scriptType: 'pscore'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          cd $(Pipeline.Workspace)/MigrationBundle/efbundle
+          .\efbundle --connection "$(connection)"
+
     - script: |
         $(Pipeline.Workspace)/MigrationBundle/efbundle --connection "$(ConnectionStrings--DefaultConnection)"
       displayName: 'Run Database EF Migration Bundle'
-
-    # TODO: Remove this?
-    # - task: PublishBuildArtifacts@1
-    #   displayName: 'Publish Artifact: drop'
-    #   condition: succeeded()
 
     - task: AzureRmWebAppDeployment@4
       displayName: 'Deploy $(projectNameWebApi)'
