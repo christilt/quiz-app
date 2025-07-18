@@ -95,6 +95,19 @@ stages:
           chmod +x efbundle
           ./efbundle --connection "$(ConnectionStrings--DefaultConnection)"
 
+    - task: AzureCLI@2
+      displayName: 'Run Database EF Migration Bundle'
+      inputs:
+        azureSubscription: $(serviceConnection)
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          cd "$(Pipeline.Workspace)/MigrationBundle"
+          chmod +x ./efbundle
+          ./efbundle --connection "$ConnectionStrings__DefaultConnection"
+      env:
+        ConnectionStrings__DefaultConnection: $(ConnectionStrings--DefaultConnection)
+
     - task: AzureRmWebAppDeployment@4
       displayName: 'Deploy $(projectNameWebApi)'
       inputs:
