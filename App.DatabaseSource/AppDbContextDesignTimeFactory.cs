@@ -12,9 +12,9 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
 {
     public AppDbContext CreateDbContext(string[] args)
     {
-        if (Environment.GetEnvironmentVariable("BUILD_ENVIRONMENT") == "AzureDevops")
+        if (Environment.GetEnvironmentVariable("BUILD_ENVIRONMENT") == "AzureDevOps")
         {
-            var connectionString = Environment.GetEnvironmentVariable("ConnectionString");
+            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
 
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
             optionsBuilder.UseSqlServer(connectionString);
