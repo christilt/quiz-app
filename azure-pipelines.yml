@@ -26,9 +26,6 @@ stages:
   - job: deploy
     displayName: Deploy
     steps:
-    - env:
-        BUILD_ENVIRONMENT: "AzureDevOps"
-
     - task: UseDotNet@2
       displayName: 'Use .NET SDK 8.x'
       inputs:
@@ -94,9 +91,10 @@ stages:
         inlineScript: |
           cd "$(Pipeline.Workspace)/MigrationBundle"
           chmod +x ./efbundle
-          ./efbundle --connection "$ConnectionStrings__DefaultConnection"
+          ./efbundle --connection "$CONNECTION_STRING"
       env:
-        ConnectionStrings__DefaultConnection: $(ConnectionStrings--DefaultConnection)
+        BUILD_ENVIRONMENT: "AzureDevOps"
+        CONNECTION_STRING: $(ConnectionStrings--DefaultConnection)
 
     - task: AzureRmWebAppDeployment@4
       displayName: 'Deploy $(projectNameWebApi)'
