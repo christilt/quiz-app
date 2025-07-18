@@ -87,10 +87,12 @@ stages:
     - task: AzureCLI@2
       inputs:
         azureSubscription: $(serviceConnection)
-        scriptType: 'pscore'
+        scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          $(Pipeline.Workspace)/MigrationBundle/efbundle --connection "$(ConnectionStrings--DefaultConnection)"
+          cd $(Pipeline.Workspace)/MigrationBundle
+          chmod +x efbundle
+          ./efbundle --connection "$(ConnectionStrings--DefaultConnection)"
 
     - task: AzureRmWebAppDeployment@4
       displayName: 'Deploy $(projectNameWebApi)'
