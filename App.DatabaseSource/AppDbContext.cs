@@ -23,12 +23,4 @@ public class AppDbContext : DbContext
     {
         modelBuilder.Entity<Quiz>().ToTable("Quiz");
     }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-            optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection"));
-        }
-    }
 }
