@@ -38,6 +38,13 @@ stages:
         SecretsFilter: 'ConnectionStrings--DefaultConnection'
         RunAsPreJob: true
 
+    # TODO: Remove
+    - script: |
+        echo "Secret starts with: ${CONNECTION_STRING:0:5}*******"
+      displayName: 'Echo Partial Secret (Masked)'
+      env:
+        CONNECTION_STRING: $(ConnectionStrings--DefaultConnection)
+
     - task: DotNetCoreCLI@2
       displayName: 'Restore project dependencies'
       inputs:
