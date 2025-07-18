@@ -38,13 +38,6 @@ stages:
         SecretsFilter: 'ConnectionStrings--DefaultConnection'
         RunAsPreJob: true
 
-    # TODO: Remove
-    - script: |
-        echo "Secret starts with: ${CONNECTION_STRING:0:5}*******"
-      displayName: 'Echo Partial Secret (Masked)'
-      env:
-        CONNECTION_STRING: $(ConnectionStrings--DefaultConnection)
-
     - task: DotNetCoreCLI@2
       displayName: 'Restore project dependencies'
       inputs:
@@ -86,18 +79,19 @@ stages:
         ArtifactName: 'MigrationBundle'
 
     - task: DownloadPipelineArtifact@2
+      displayName: 'Download Database EF Migration Bundle'
       inputs:
         artifactName: 'MigrationBundle'
         targetPath: '$(Pipeline.Workspace)/MigrationBundle'
-      displayName: 'Download Database EF Migration Bundle'
 
     - task: AzureCLI@2
+      displayName: 'Run Database EF Migration Bundle'
       inputs:
         azureSubscription: $(serviceConnection)
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          cd $(Pipeline.Workspace)/MigrationBundle
+          cd "$(Pipeline.Workspace)/MigrationBundle"
           chmod +x efbundle
           ./efbundle --connection "$(ConnectionStrings--DefaultConnection)"
 
