@@ -14,6 +14,7 @@ variables:
   projectNameWebApi: 'App.WebApi'
   projectNameWebUiAdmin: 'App.WebUi.Admin'
   serviceConnection: 'Dev service connection quizapp'
+  
 
 # TODO: Split this into sensible stages
 stages:
@@ -25,11 +26,15 @@ stages:
   - job: deploy
     displayName: Deploy
     steps:
+    - env:
+        BUILD_ENVIRONMENT: "AzureDevOps"
+
     - task: UseDotNet@2
       displayName: 'Use .NET SDK 8.x'
       inputs:
         packageType: sdk
         version: '8.x'
+
     - task: AzureKeyVault@2
       displayName: 'Get keyvault values'
       inputs:
@@ -59,10 +64,6 @@ stages:
         publishWebProjects: false
         arguments: '--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
         zipAfterPublish: true
-
-    - script: |
-        dotnet tool install --global dotnet-ef
-      displayName: 'Install dotnet-ef CLI'
 
     - task: DotNetCoreCLI@2
       displayName: 'Create Database EF Migration Bundle'

@@ -12,19 +12,29 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
 {
     public AppDbContext CreateDbContext(string[] args)
     {
-        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
+        if (Environment.GetEnvironmentVariable("BUILD_ENVIRONMENT") == "AzureDevops")
+        {
+            var connectionString = Environment.GetEnvironmentVariable("ConnectionString");
 
-        var config = new ConfigurationBuilder()
-            .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..", "App.WebApi"))
-            .AddJsonFile("appsettings.json", optional: false)
-            .AddJsonFile("appsettings.Development.json", optional: false)
-            .Build();
+            var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+            optionsBuilder.UseSqlServer(connectionString);
+            return new AppDbContext(optionsBuilder.Options);
+        }
+        else
+        {
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
 
-        var connectionString = config.GetConnectionString("Local");
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..", "App.WebApi"))
+                .AddJsonFile("appsettings.json", optional: false)
+                .AddJsonFile("appsettings.Development.json", optional: false)
+                .Build();
 
-        var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-        optionsBuilder.UseSqlServer(connectionString);
+            var connectionString = config.GetConnectionString("Local");
 
-        return new AppDbContext(optionsBuilder.Options);
+            var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+            optionsBuilder.UseSqlServer(connectionString);
+            return new AppDbContext(optionsBuilder.Options);
+        }
     }
 }
