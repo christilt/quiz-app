@@ -30,14 +30,6 @@ stages:
         packageType: sdk
         version: '8.x'
 
-    - task: AzureKeyVault@2
-      displayName: 'Get keyvault values'
-      inputs:
-        azureSubscription: $(serviceConnection)
-        KeyVaultName: 'ct-dev-kv'
-        SecretsFilter: 'ConnectionStrings--DefaultConnection,AzureDevOps--SqlServerName,AzureDevOps--SqlDatabaseName'
-        RunAsPreJob: true
-
     - task: DotNetCoreCLI@2
       displayName: 'Restore project dependencies'
       inputs:
@@ -82,9 +74,17 @@ stages:
   displayName: Deploy
   jobs:
 
-  - job: publish_database
-    displayName: Publish database
+  - job: deploy_database
+    displayName: Deploy database
     steps:
+    - task: AzureKeyVault@2
+      displayName: 'Get keyvault values'
+      inputs:
+        azureSubscription: $(serviceConnection)
+        KeyVaultName: 'ct-dev-kv'
+        SecretsFilter: 'ConnectionStrings--DefaultConnection,AzureDevOps--SqlServerName,AzureDevOps--SqlDatabaseName'
+        RunAsPreJob: true
+        
     - task: DownloadPipelineArtifact@2
       displayName: 'Download Database EF Migration Bundle'
       inputs:
@@ -93,6 +93,10 @@ stages:
         
     - task: AzureCLI@2
       displayName: 'Wake up database'
+      env: 
+        RESOURCE_GROUP: "dev"
+        SQL_SERVER_NAME: $(AzureDevOps--SqlServerName)
+        SQL_DATABASE_NAME: $(AzureDevOps--SqlDatabaseName)
       inputs:
         azureSubscription: $(serviceConnection)
         scriptType: 'bash'
@@ -100,13 +104,14 @@ stages:
         failOnStandardError: true
         inlineScript: |
           az sql db show --name $SQL_DATABASE_NAME --server $SQL_SERVER_NAME --resource-group $RESOURCE_GROUP
-      env: 
-        RESOURCE_GROUP: "dev"
-        SQL_SERVER_NAME: $(AzureDevOps--SqlServerName)
-        SQL_DATABASE_NAME: $(AzureDevOps--SqlDatabaseName)
 
     - task: AzureCLI@2
       displayName: 'Run Database EF Migration Bundle'
+      env:
+        BUILD_ENVIRONMENT: "AzureDevOps"
+        CONNECTION_STRING: $(ConnectionStrings--DefaultConnection)
+        RESOURCE_GROUP: "dev"
+        SQL_SERVER_NAME: $(AzureDevOps--SqlServerName)
       inputs:
         azureSubscription: $(serviceConnection)
         scriptType: 'bash'
@@ -132,15 +137,10 @@ stages:
             --resource-group $RESOURCE_GROUP \
             --server $SQL_SERVER_NAME \
             --name AllowDevOpsAgent
-      env:
-        BUILD_ENVIRONMENT: "AzureDevOps"
-        CONNECTION_STRING: $(ConnectionStrings--DefaultConnection)
-        RESOURCE_GROUP: "dev"
-        SQL_SERVER_NAME: $(AzureDevOps--SqlServerName)
 
-  - job: publish_api
-    dependsOn: publish_database
-    displayName: Publish API
+  - job: deploy_api
+    dependsOn: deploy_database
+    displayName: Deploy API
     steps:
     - task: AzureRmWebAppDeployment@4
       displayName: 'Deploy $(projectNameWebApi)'
