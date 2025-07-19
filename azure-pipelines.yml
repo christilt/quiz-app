@@ -15,16 +15,15 @@ variables:
   projectNameWebUiAdmin: 'App.WebUi.Admin'
   serviceConnection: 'Dev service connection quizapp'
   
-
-# TODO: Split this into sensible stages
 stages:
-- stage: dev
-  displayName: Dev
+- stage: publish
+  displayName: Publish
   variables:
     buildConfiguration: 'Release'
   jobs:
-  - job: deploy
-    displayName: Deploy
+  
+  - job: publish
+    displayName: Publish
     steps:
     - task: UseDotNet@2
       displayName: 'Use .NET SDK 8.x'
@@ -37,7 +36,7 @@ stages:
       inputs:
         azureSubscription: $(serviceConnection)
         KeyVaultName: 'ct-dev-kv'
-        SecretsFilter: 'ConnectionStrings--DefaultConnection,AzureDevOps--SqlServerName'
+        SecretsFilter: 'ConnectionStrings--DefaultConnection,AzureDevOps--SqlServerName,AzureDevOps--SqlDatabaseName'
         RunAsPreJob: true
 
     - task: DotNetCoreCLI@2
@@ -80,11 +79,32 @@ stages:
         PathtoPublish: '$(Build.SourcesDirectory)/App.DatabaseSource/efbundle'
         ArtifactName: 'MigrationBundle'
 
+- stage: deploy
+  displayName: Deploy
+  jobs:
+
+  - job: publish_database
+    displayName: Publish database
+    steps:
     - task: DownloadPipelineArtifact@2
       displayName: 'Download Database EF Migration Bundle'
       inputs:
         artifactName: 'MigrationBundle'
         targetPath: '$(Pipeline.Workspace)/MigrationBundle'
+        
+    - task: AzureCLI@2
+      displayName: 'Wake up database'
+      inputs:
+        azureSubscription: $(serviceConnection)
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        failOnStandardError: true
+        inlineScript: |
+          az sql db show --name $SQL_DATABASE_NAME --server $SQL_SERVER_NAME --resource-group $RESOURCE_GROUP
+      env: 
+        RESOURCE_GROUP: "dev"
+        SQL_SERVER_NAME: $(AzureDevOps--SqlServerName)
+        SQL_DATABASE_NAME: $(AzureDevOps--SqlDatabaseName)
 
     - task: AzureCLI@2
       displayName: 'Run Database EF Migration Bundle'
@@ -92,7 +112,9 @@ stages:
         azureSubscription: $(serviceConnection)
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
+        failOnStandardError: true
         inlineScript: |
+          # Allow agent IP address (since it is dynamic)
           ip=$(curl -s https://ipinfo.io/ip)
           az sql server firewall-rule create \
             --resource-group $RESOURCE_GROUP \
@@ -102,21 +124,24 @@ stages:
             --end-ip-address $ip
 
           cd "$(Pipeline.Workspace)/MigrationBundle"
+          # Allow execution of the bundle
           chmod +x ./efbundle
           ./efbundle --connection "$CONNECTION_STRING"
 
+          # Remove agent IP address
           az sql server firewall-rule delete \
             --resource-group $RESOURCE_GROUP \
             --server $SQL_SERVER_NAME \
             --name AllowDevOpsAgent
-        failOnStandardError: true
       env:
         BUILD_ENVIRONMENT: "AzureDevOps"
         CONNECTION_STRING: $(ConnectionStrings--DefaultConnection)
         RESOURCE_GROUP: "dev"
         SQL_SERVER_NAME: $(AzureDevOps--SqlServerName)
 
-
+  - job: publish_api
+    displayName: Publish API
+    steps:
     - task: AzureRmWebAppDeployment@4
       displayName: 'Deploy $(projectNameWebApi)'
       inputs:
