@@ -11,6 +11,7 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
+  buildConfiguration: 'Release'
   projectNameWebApi: 'App.WebApi'
   projectNameWebUiAdmin: 'App.WebUi.Admin'
   serviceConnection: 'Dev service connection quizapp'
@@ -18,10 +19,8 @@ variables:
 stages:
 - stage: publish
   displayName: Publish
-  variables:
-    buildConfiguration: 'Release'
   jobs:
-  
+
   - job: publish
     displayName: Publish
     steps:
@@ -140,6 +139,7 @@ stages:
         SQL_SERVER_NAME: $(AzureDevOps--SqlServerName)
 
   - job: publish_api
+    dependsOn: publish_database
     displayName: Publish API
     steps:
     - task: AzureRmWebAppDeployment@4
