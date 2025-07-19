@@ -52,6 +52,12 @@ stages:
         arguments: '--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
         zipAfterPublish: true
 
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish $(projectNameWebApi) - $(buildConfiguration) as build artifact'
+      inputs:
+        PathtoPublish: $(Build.ArtifactStagingDirectory)/$(buildConfiguration)
+        ArtifactName: 'WebApi'
+
     - script: |
         dotnet tool install --global dotnet-ef
       displayName: 'Install dotnet-ef CLI'
@@ -142,6 +148,12 @@ stages:
     dependsOn: deploy_database
     displayName: Deploy API
     steps:
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download Web API'
+      inputs:
+        artifactName: 'WebApi'
+        targetPath: '$(Pipeline.Workspace)/WebApi'
+
     - task: AzureRmWebAppDeployment@4
       displayName: 'Deploy $(projectNameWebApi)'
       inputs:
@@ -149,4 +161,4 @@ stages:
         azureSubscription: $(serviceConnection)
         appType: 'webApp'
         WebAppName: 'ct-dev-quizapp-api'
-        packageForLinux: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/**/$(projectNameWebApi).zip'
+        packageForLinux: '$(Pipeline.Workspace)/WebApi/**/$(projectNameWebApi).zip'
