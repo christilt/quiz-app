@@ -1,4 +1,5 @@
 using App.DatabaseSource;
+using App.WebApi.Features.Admin;
 using Azure.Core;
 using Azure.Identity;
 
@@ -28,7 +29,7 @@ public class Program
             new Uri(builder.Configuration["KeyVault:VaultUri"]!),
             credential);
         builder.Services.AddDatabaseSourceServices(builder.Configuration, credential);
-        builder.Services.AddDatabaseSourceServices(builder.Configuration, credential);
+        builder.Services.AddWebApiServices();
 
 
         var app = builder.Build();
@@ -42,12 +43,7 @@ public class Program
 
         app.UseHttpsRedirection();
 
-        app.MapGet("/api/quizes", () =>
-        {
-            return new object[] { };
-        })
-        .WithName("GetQuizes")
-        .WithOpenApi();
+        app.MapQuizEndpoints();
 
         app.Run();
     }
