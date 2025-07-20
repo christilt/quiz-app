@@ -6,7 +6,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddWebApiServices(this IServiceCollection services)
     {
-        services.AddSingleton<QuizEndpointHandler>();
+        services.AddScoped<QuizEndpointHandler>();
         return services;
     }
 }
