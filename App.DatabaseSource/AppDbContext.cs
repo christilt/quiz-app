@@ -1,6 +1,7 @@
 ﻿using App.DatabaseSource.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,8 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Quiz>().ToTable("Quiz");
+        modelBuilder.Entity<Quiz>().ToTable("Quiz")
+            .Property(x => x.Guid)
+            .HasValueGenerator<SequentialGuidValueGenerator>();
     }
 }
