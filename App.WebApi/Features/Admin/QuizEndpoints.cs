@@ -11,6 +11,7 @@ public static class QuizEndpoints
     {
         var group = builder.MapGroup("api/quizes")
             .WithOpenApi()
+            .RequireAuthorization()
             ;
 
         group.MapGet("/", (QuizEndpointHandler handler, CancellationToken cancellation) => 
