@@ -64,13 +64,6 @@ public class Program
         });
         var credential = new DefaultAzureCredential();
         builder.Services.AddSingleton<TokenCredential>(credential);
-        // TODO:
-        //var keyVaultSecretManager = new HierarchicalKeyVaultSecretManager();
-        //builder.Services.AddSingleton(keyVaultSecretManager);
-        //builder.Configuration.AddAzureKeyVault(
-        //    new Uri(builder.Configuration["KeyVault:VaultUri"]!),
-        //    credential,
-        //    keyVaultSecretManager);
 
         builder.Configuration.AddAzureKeyVault(
             new Uri(builder.Configuration["KeyVault:VaultUri"]!),
